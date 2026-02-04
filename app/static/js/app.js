@@ -5,6 +5,10 @@
   const rofiOverlay = document.getElementById('board-search');
   const rofiQuery = document.getElementById('rofi-query');
   const rofiResults = document.getElementById('rofi-results');
+  const shareContext = document.querySelector('[data-share-base], [data-share-url]');
+  const shareBase = shareContext ? shareContext.getAttribute('data-share-base') || '' : '';
+  const shareUrl = shareContext ? shareContext.getAttribute('data-share-url') || '' : '';
+  const shareButtons = Array.from(document.querySelectorAll('[data-action="share"]'));
 
   let index = items.findIndex((item) => item.classList.contains('selected'));
   let activeLinkIndex = -1;
@@ -15,9 +19,87 @@
   let rofiSelection = 0;
   let rofiMatches = [];
   let boardDataset = [];
+  let toastTimer;
   if (index < 0 && items.length) {
     index = 0;
     items[0].classList.add('selected');
+  }
+
+  function trackEvent(eventName, meta) {
+    if (!eventName) {
+      return;
+    }
+    const payload = {
+      event: eventName,
+      meta: {
+        screen,
+        ...(meta || {}),
+      },
+    };
+    fetch('/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).catch(() => {});
+  }
+
+  function showToast(message) {
+    if (!message) {
+      return;
+    }
+    let toast = document.querySelector('.share-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'share-toast';
+      const container = document.querySelector('.app') || document.body;
+      container.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('visible');
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => {
+      toast.classList.remove('visible');
+    }, 2200);
+  }
+
+  function buildShareUrl() {
+    if (shareUrl) {
+      return new URL(shareUrl, window.location.origin).toString();
+    }
+    if (shareBase) {
+      const selected = items[index] || document.querySelector('.selectable.selected');
+      const postId = selected ? selected.getAttribute('data-post-id') : '';
+      if (postId) {
+        return new URL(`${shareBase}${postId}`, window.location.origin).toString();
+      }
+    }
+    return window.location.href;
+  }
+
+  async function handleShare() {
+    if (!shareUrl && !shareBase) {
+      return;
+    }
+    const url = buildShareUrl();
+    trackEvent('share_clicked', { url });
+    if (navigator.share) {
+      try {
+        await navigator.share({ url });
+        trackEvent('share_completed', { url, method: 'native' });
+        showToast('Share opened');
+        return;
+      } catch (err) {
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      trackEvent('share_completed', { url, method: 'clipboard' });
+      showToast('Link copied');
+    } catch (err) {
+      trackEvent('share_completed', { url, method: 'prompt' });
+      window.prompt('Copy link', url);
+      showToast('Link ready');
+    }
   }
 
   function buildBoardDataset() {
@@ -207,6 +289,11 @@
     linkRows = buildLinkRows(items[index]);
   }
   boardDataset = buildBoardDataset();
+  if (shareButtons.length) {
+    shareButtons.forEach((button) => {
+      button.addEventListener('click', handleShare);
+    });
+  }
 
   window.addEventListener('pageshow', () => {
     if (screen === 'home' && sessionStorage.getItem('rofiNavigated')) {
@@ -242,6 +329,12 @@
         event.preventDefault();
         window.history.back();
       }
+      return;
+    }
+
+    if ((event.key === 'c' || event.key === 'C') && (shareUrl || shareBase)) {
+      event.preventDefault();
+      handleShare();
       return;
     }
 

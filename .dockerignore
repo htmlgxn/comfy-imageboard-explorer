@@ -1,0 +1,14 @@
+.DS_Store
+.git
+.gitignore
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pytest_cache
+tests/
+screens/
+resources/unedited_screens/
+resources/.DS_Store
+resources/4chan-api/.DS_Store

@@ -1,4 +1,5 @@
 import html as html_lib
+import logging
 from typing import Optional
 
 from fastapi import FastAPI, Request
@@ -16,6 +17,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
 client = ChanAPIClient()
+logger = logging.getLogger("imageboard_browser.analytics")
 
 
 @app.on_event("startup")
@@ -235,6 +237,7 @@ async def thread(request: Request, board: str, thread_id: int, selected: Optiona
                 "request": request,
                 "screen": "thread",
                 "board": board,
+                "thread_id": thread_id,
                 "error": message,
             },
             status_code=status_code,
@@ -246,6 +249,7 @@ async def thread(request: Request, board: str, thread_id: int, selected: Optiona
                 "request": request,
                 "screen": "thread",
                 "board": board,
+                "thread_id": thread_id,
                 "error": "Unable to load thread right now.",
             },
             status_code=502,
@@ -263,6 +267,7 @@ async def thread(request: Request, board: str, thread_id: int, selected: Optiona
             "request": request,
             "screen": "thread",
             "board": board,
+            "thread_id": thread_id,
             "posts": posts,
             "selected": selected_id,
         },
@@ -282,6 +287,9 @@ async def post_view(request: Request, board: str, thread_id: int, post_id: int):
                 "request": request,
                 "screen": "post",
                 "board": board,
+                "thread_id": thread_id,
+                "post_id": post_id,
+                "share_url": f"/board/{board}/thread/{thread_id}/post/{post_id}",
                 "error": message,
             },
             status_code=status_code,
@@ -293,6 +301,9 @@ async def post_view(request: Request, board: str, thread_id: int, post_id: int):
                 "request": request,
                 "screen": "post",
                 "board": board,
+                "thread_id": thread_id,
+                "post_id": post_id,
+                "share_url": f"/board/{board}/thread/{thread_id}/post/{post_id}",
                 "error": "Unable to load thread right now.",
             },
             status_code=502,
@@ -306,6 +317,9 @@ async def post_view(request: Request, board: str, thread_id: int, post_id: int):
                 "request": request,
                 "screen": "post",
                 "board": board,
+                "thread_id": thread_id,
+                "post_id": post_id,
+                "share_url": f"/board/{board}/thread/{thread_id}/post/{post_id}",
                 "error": "Post not found.",
             },
             status_code=404,
@@ -317,7 +331,10 @@ async def post_view(request: Request, board: str, thread_id: int, post_id: int):
             "request": request,
             "screen": "post",
             "board": board,
+            "thread_id": thread_id,
+            "post_id": post_id,
             "post": post,
+            "share_url": f"/board/{board}/thread/{thread_id}/post/{post_id}",
         },
     )
 
@@ -374,3 +391,16 @@ async def post_image(request: Request, board: str, thread_id: int, post_id: int)
             "is_video": post.get("is_video", False),
         },
     )
+
+
+@app.post("/track")
+async def track_event(request: Request) -> dict:
+    try:
+        payload = await request.json()
+    except Exception:
+        return {"ok": False}
+
+    event = payload.get("event")
+    meta = payload.get("meta", {})
+    logger.info("event=%s meta=%s", event, meta)
+    return {"ok": True}

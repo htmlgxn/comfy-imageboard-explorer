@@ -1,11 +1,15 @@
 {% extends "layout.html" %}
 
 {% block content %}
-  <section class="thread">
+  <section class="thread" data-share-base="/board/{{ board }}/thread/{{ thread_id }}/post/">
     <div class="thread-header">/{{ board }}/</div>
     {% if error %}
       <div class="error-panel">{{ error }}</div>
     {% else %}
+      <div class="view-actions">
+        <button class="action-link" type="button" data-action="share">share link</button>
+        <span class="action-hint"><span class="key">c</span> copy</span>
+      </div>
       <div class="list-window">
         <div class="post-list">
           {% for post in posts %}
@@ -60,6 +64,7 @@
   <span class="status-item"><span class="key">h</span><span class="label">home</span></span>
   <span class="status-item"><span class="key">↑/↓</span><span class="label">move</span></span>
   <span class="status-item"><span class="key">enter</span><span class="label">open post / image</span></span>
+  <span class="status-item"><span class="key">c</span><span class="label">copy link</span></span>
   <span class="status-item"><span class="key">backspace</span><span class="label">back</span></span>
   <span class="status-item"><span class="key">WASD</span><span class="label">select link</span></span>
   <span class="status-item"><span class="key">e</span><span class="label">open link</span></span>

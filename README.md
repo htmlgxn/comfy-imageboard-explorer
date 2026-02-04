@@ -85,6 +85,43 @@ uvicorn app.main:app --reload
 
 Open http://127.0.0.1:8000
 
+## Docker
+
+Build the image:
+
+```bash
+docker build -t imageboard-explorer .
+```
+
+Run the container:
+
+```bash
+docker run -p 8000:8000 imageboard-explorer
+```
+
+Or use Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+Makefile shortcuts (macOS/Linux):
+
+```bash
+make docker-build
+make docker-run
+make docker-compose
+make docker-down
+```
+
+The container includes a Docker healthcheck that pings `/` using Python stdlib.
+
+Custom host/port:
+
+```bash
+HOST=0.0.0.0 PORT=8000 docker run -p 8000:8000 imageboard-explorer
+```
+
 ## Notes
 
 - This project respects 4chan API rules and uses `If-Modified-Since` with in-memory caching.
