@@ -36,7 +36,7 @@ line-length = 88
 target-version = "py314"
 
 [tool.ruff.format]
-quote-style = "single"
+quote-style = "double"
 indent-style = "space"
 
 [tool.ruff.lint]
