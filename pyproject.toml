@@ -1,0 +1,60 @@
+[project]
+name = "comfy-imageboard-explorer"
+version = "2026.2.8"
+description = "A TUI-style webapp for browsing imageboard content in a simplified view."
+readme = "README.md"
+requires-python = ">=3.13.1"
+license = {text = "Unlicense"}
+authors = [
+    {name = "Ben Chitty", email = "htmlgxn@pm.me"},
+]
+dependencies = [
+    "fastapi==0.115.8",
+    "httpx==0.27.2",
+    "jinja2==3.1.4",
+    "pydantic==2.10.4",
+    "uvicorn==0.30.6",
+]
+
+[project.scripts]
+imgboard-explorer = "imgboard_explorer.main:main"
+
+[project.urls]
+Homepage = "https://github.com/htmlgxn/comfy-imageboard-explorer"
+Repository = "https://github.com/htmlgxn/comfy-imageboard-explorer"
+
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/imgboard_explorer"]
+include = ["src/imgboard_explorer/templates/*", "src/imgboard_explorer/static/**/*"]
+
+[tool.black]
+line-length = 88
+target-version = ["py313"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+strict_optional = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[dependency-groups]
+dev = [
+    "isort>=7.0.0",
+    "mypy>=1.19.1",
+    "pytest>=8.4.2",
+    "ruff>=0.15.0",
+    "tomli-w>=1.2.0",
+]
