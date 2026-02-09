@@ -2,63 +2,39 @@
 
 This guide covers how to set up the development environment and contribute to comfy-imageboard-explorer.
 
-## Prerequisites
+## Installation
 
-- Python 3.14+
-- [uv](https://docs.astral.sh/uv/) package manager
+**Requirements:**
 
-## Getting Started
+[uv](https://docs.astral.sh/uv/) package manager
 
-### Quick Install (Recommended)
+**Setup and Sync:**
 
-```bash
-curl -sSL https://raw.githubusercontent.com/htmlgxn/comfy-imageboard-explorer/main/scripts/install.sh | bash -s -- --dev
-```
-
-This will:
-1. Clone the repository to `~/projects/imgboard-explorer`
-2. Install all dependencies (including dev dependencies)
-3. Create a `imgboard-explorer-dev` command
-
-The app will be available at http://127.0.0.1:8000
-
-**Customize install location:**
-```bash
-# Non-interactive - specify directory via environment variable
-DEV_DIR=~/code/imgboard-explorer curl -sSL https://raw.githubusercontent.com/htmlgxn/comfy-imageboard-explorer/main/scripts/install.sh | bash -s -- --dev
-```
-
-### Manual Setup
+If not already downloaded:
 
 ```bash
-# Clone the repository
 git clone https://github.com/htmlgxn/comfy-imageboard-explorer.git
 cd comfy-imageboard-explorer
-
-# Install dependencies (including dev dependencies)
-uv sync --dev
-
-# Run the application
-uv run imgboard-explorer
 ```
 
-The app will be available at http://127.0.0.1:8000
+Sync all dependancies including development dependancies:
 
-## Development Mode
+```bash
+uv sync --dev
+````
+
+To run:
+```bash
+uv run imgboard-explorer
+````
+
+Open http://127.0.0.1/ in your web browser
 
 For development with auto-reload:
 
 ```bash
 uv run uvicorn imgboard_explorer.main:app --reload
 ```
-
-## Uninstall
-
-```bash
-curl -sSL https://raw.githubusercontent.com/htmlgxn/comfy-imageboard-explorer/main/scripts/install.sh | bash -s -- --uninstall
-```
-
-This will uninstall both regular and dev versions if installed.
 
 ## Running Tests
 
