@@ -44,9 +44,9 @@ Click a thumbnail to view more screenshots
 **Setup and Run:**
 
 ```bash
-git clone https://github.com/htmlgxn/comfy-imageboard-explorer.git
-cd comfy-imageboard-explorer
-uv run imgboard-explorer
+git clone https://github.com/htmlgxn/imageboard-explorer.git
+cd imageboard-explorer
+uv run imageboard-explorer
 ```
 Open http://127.0.0.1/ in your web browser
 
